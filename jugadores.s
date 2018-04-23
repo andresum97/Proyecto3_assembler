@@ -21,6 +21,8 @@
 .global primerjugador
 primerjugador:
 	push{r4-r6,lr}
+
+
 	ldr r0,r5  @Asignar el numero que salio en el dado
 	ldr r0,[r0]
 	ldr r1,r6  @Asignar el numero de pasos que lleva el personaje
