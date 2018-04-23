@@ -17,6 +17,7 @@
 @@Retorno:
 @@	r0: pasos que dio el jugador, si para adelante o atras
 @*************************************
+
 .global primerjugador
 primerjugador:
 	push{r4-r6,lr}
@@ -41,7 +42,10 @@ primerjugador:
 	cmp personaje,#0    
 	movlt personaje,#0
 	cmp personaje, #50
-	movgt personaje,#50
+	bgt victoria1
+
+	cmp personaje, #50
+	bgt terminar
 
 	@@Cargar los pasos que dio el personaje
 	ldr r0,
@@ -62,6 +66,9 @@ primerjugador:
 .global segundojugador
 segundojugador:
 	push{r4-r7,lr}
+
+	b random
+	
 	ldr r0,r5  @Asignar el numero que salio en el dado
 	ldr r0,[r0]
 	ldr r1,r7  @Asignar el numero de pasos que lleva el personaje
@@ -83,7 +90,10 @@ segundojugador:
 	cmp personaje,#0    
 	movlt personaje,#0
 	cmp personaje, #50
-	movgt personaje,#50
+	bgt v2
+	cmp personaje, #50
+	bgt terminar
+
 
 	@@Cargar los pasos que dio el personaje
 	ldr r0,
@@ -91,3 +101,44 @@ segundojugador:
 	.unreq personaje
 	.unreq dados
 	pop{r4-r7,pc}
+
+
+random:
+	bl aleatorios
+	and r0,#15
+	cmp r0,#2
+	blt random
+	cmp r0,#12
+	bgt random
+	mov r1,r0
+
+@Cada uno llama a su respectivo mensaje de victoria y lo imprime
+v1:
+	ldr r0,=victoria1
+	bl puts
+
+v2:
+	ldr r0,=victoria2
+	bl puts
+
+@mensajes de victoria para cada jugador
+victoria1:
+	.asciz "Felicidades jugador 1 ES EL GANADOR!!\n"
+
+victoria2:
+	.asciz "Felicidades jugador 2 ES EL GANADOR!!\n"
+
+despedida:
+	.asciz "Gracias por jugar."
+	
+@Permite la salida del programa, igual se encuentra en el main
+terminar:
+	/*Se imprime un mensaje de despedida*/
+	ldr R0,=despedida
+	bl puts
+
+	/*salida correcta*/
+	mov R0, #0
+	mov R3, #0
+	ldmfd sp!, {lr}	/* R13 = SP */
+	bx lr
